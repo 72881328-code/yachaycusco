@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Resource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ResourceController extends Controller
 {
@@ -29,8 +30,17 @@ class ResourceController extends Controller
             'level' => 'required|in:Primaria,Secundaria',
             'lang' => 'required|in:Castellano,Quechua,Bilingue',
             'type' => 'required|in:pdf,video,audio',
+            'file' => 'nullable|file|mimes:pdf|max:10240',
         ]);
         
+        if ($validated['type'] === 'pdf' && !$request->hasFile('file')) {
+            return back()->withErrors(['file' => 'El archivo PDF es obligatorio para recursos tipo PDF.'])->withInput();
+        }
+
+        if ($request->hasFile('file')) {
+            $validated['file_path'] = $request->file('file')->store('resources', 'public');
+        }
+
         $validated['author_id'] = Auth::id();
         $validated['status'] = 'pending';
         
@@ -70,7 +80,19 @@ class ResourceController extends Controller
             'level' => 'required|in:Primaria,Secundaria',
             'lang' => 'required|in:Castellano,Quechua,Bilingue',
             'type' => 'required|in:pdf,video,audio',
+            'file' => 'nullable|file|mimes:pdf|max:10240',
         ]);
+        
+        if ($validated['type'] === 'pdf' && !$request->hasFile('file') && !$resource->file_path) {
+            return back()->withErrors(['file' => 'El archivo PDF es obligatorio para recursos tipo PDF.'])->withInput();
+        }
+
+        if ($request->hasFile('file')) {
+            if ($resource->file_path && Storage::disk('public')->exists($resource->file_path)) {
+                Storage::disk('public')->delete($resource->file_path);
+            }
+            $validated['file_path'] = $request->file('file')->store('resources', 'public');
+        }
         
         $resource->update($validated);
         
@@ -86,6 +108,10 @@ class ResourceController extends Controller
         $resource = Resource::findOrFail($id);
         if ($resource->author_id !== Auth::id()) {
             abort(403);
+        }
+
+        if ($resource->file_path && Storage::disk('public')->exists($resource->file_path)) {
+            Storage::disk('public')->delete($resource->file_path);
         }
         
         $resource->delete();

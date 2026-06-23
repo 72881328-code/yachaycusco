@@ -17,6 +17,7 @@ Route::post('/biblioteca/{id}/guardar', [LibraryController::class, 'save'])->nam
 
 // Descargas (AJAX)
 Route::post('/resources/{id}/download', [LibraryController::class, 'download'])->name('resources.download');
+Route::get('/resources/{id}/archivo', [LibraryController::class, 'file'])->name('resources.file');
 
 // Autenticación
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Resource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class LibraryController extends Controller
 {
@@ -55,5 +57,18 @@ class LibraryController extends Controller
         $resource->incrementDownloads();
         
         return response()->json(['success' => true]);
+    }
+
+    public function file($id)
+    {
+        $resource = Resource::approved()->findOrFail($id);
+
+        if (!$resource->file_path || !Storage::disk('public')->exists($resource->file_path)) {
+            abort(404);
+        }
+
+        $resource->incrementDownloads();
+
+        return Storage::disk('public')->download($resource->file_path, Str::finish($resource->title, '.pdf'));
     }
 }

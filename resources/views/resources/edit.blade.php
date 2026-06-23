@@ -7,7 +7,7 @@
     <div class="bg-white rounded-xl shadow p-8">
         <h1 class="text-2xl font-bold text-primary mb-6">✏️ Editar Recurso</h1>
         
-        <form action="{{ route('resources.update', $resource->id) }}" method="POST">
+        <form action="{{ route('resources.update', $resource->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             
@@ -60,6 +60,18 @@
                         <option value="audio" {{ $resource->type == 'audio' ? 'selected' : '' }}>Audio</option>
                     </select>
                 </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 mb-2">Archivo PDF</label>
+                <input type="file" name="file" accept="application/pdf" class="w-full text-sm text-gray-500 file:border file:border-gray-300 file:rounded-lg file:px-3 file:py-2">
+                @error('file')
+                    <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+                @enderror
+                @if($resource->file_path)
+                    <p class="mt-2 text-sm text-gray-600">Archivo actual: <a href="{{ asset('storage/'.$resource->file_path) }}" target="_blank" class="text-primary hover:underline">Ver PDF</a></p>
+                @endif
+                <p class="text-xs text-gray-500 mt-2">Sube un nuevo PDF solo si deseas reemplazar el existente.</p>
             </div>
             
             <div class="flex gap-3">

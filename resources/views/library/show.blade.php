@@ -41,6 +41,12 @@
                         </button>
                     </form>
                     
+                    @if($resource->type === 'pdf' && $resource->file_path)
+                        <a href="{{ route('resources.file', $resource->id) }}" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                            📄 Descargar PDF
+                        </a>
+                    @endif
+
                     <button onclick="saveForOffline({{ $resource->id }}, '{{ $resource->title }}')" 
                             class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
                         📥 Descargar para Offline
