@@ -11,7 +11,7 @@ class Resource extends Model
 
     protected $fillable = [
         'title', 'description', 'subject', 'level', 'lang', 
-        'type', 'file_path', 'status', 'author_id', 'views', 'downloads'
+        'type', 'file_path', 'status', 'rejection_reason', 'author_id', 'views', 'downloads'
     ];
 
     public function scopeApproved($query)

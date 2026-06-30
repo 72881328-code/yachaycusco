@@ -4,64 +4,84 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4">
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-primary">📚 Mis Recursos Guardados</h1>
-            <p class="text-gray-600 mt-2">Accede rápidamente a tus materiales favoritos y descubre los recursos más populares.</p>
+            <h1 class="text-4xl font-bold text-gold mb-2">📚 Mis Recursos Guardados</h1>
+            <p class="text-gray-400">Accede rápidamente a tus materiales favoritos y descubre recursos destacados</p>
         </div>
-        <a href="{{ route('library.index') }}" class="bg-primary text-white px-4 py-2 rounded-lg shadow hover:bg-red-800">Explorar Biblioteca</a>
+        <a href="{{ route('library.index') }}" class="btn-primary self-fit">Explorar Biblioteca</a>
     </div>
 
     @if($savedResources->count())
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Saved Resources Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         @foreach($savedResources as $resource)
-        <div class="bg-white rounded-xl shadow overflow-hidden hover:shadow-lg transition">
+        <div class="glass border border-teal/30 rounded-2xl overflow-hidden hover:border-teal/60 transition group">
             <div class="p-6">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">{{ $resource->subject }}</span>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="bg-teal/20 text-teal text-xs px-3 py-1 rounded-full font-semibold">{{ $resource->subject }}</span>
+                    <span class="text-xl">⭐</span>
                 </div>
-                <h3 class="font-bold text-lg mb-2">{{ $resource->title }}</h3>
-                <p class="text-gray-600 text-sm mb-4">{{ Str::limit($resource->description, 80) }}</p>
+                <h3 class="font-bold text-lg text-white mb-2 group-hover:text-gold transition">{{ $resource->title }}</h3>
+                <p class="text-gray-400 text-sm mb-4">{{ Str::limit($resource->description, 80) }}</p>
                 <div class="flex gap-2">
-                    <a href="{{ route('library.show', $resource->id) }}" class="flex-1 text-center bg-primary text-white px-3 py-2 rounded-lg text-sm">
-                        Ver Recurso
+                    <a href="{{ route('library.show', $resource->id) }}" class="flex-1 btn-primary text-center text-sm">
+                        👁️ Ver
                     </a>
                     <form action="{{ route('library.save', $resource->id) }}" method="POST">
                         @csrf
-                        <button type="submit" class="bg-red-500 text-white px-3 py-2 rounded-lg text-sm">Eliminar</button>
+                        <button type="submit" class="bg-red-500/20 hover:bg-red-500/40 text-red-400 hover:text-red-300 px-4 py-2 rounded-lg text-sm font-semibold transition border border-red-500/30">
+                            ✗
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
         @endforeach
     </div>
-    <div class="mt-8">{{ $savedResources->links() }}</div>
+
+    <!-- Pagination -->
+    @if($savedResources->hasPages())
+        <div class="mb-12 flex justify-center">
+            {{ $savedResources->links() }}
+        </div>
+    @endif
     @else
-    <div class="bg-white rounded-lg shadow p-12 text-center">
-        <p class="text-gray-500">No tienes recursos guardados.</p>
-        <a href="{{ route('library.index') }}" class="inline-block mt-4 bg-primary text-white px-6 py-2 rounded-lg">Explorar Biblioteca</a>
+    <!-- Empty State -->
+    <div class="glass border border-teal/30 rounded-2xl p-12 text-center mb-12">
+        <div class="text-5xl mb-4">📭</div>
+        <p class="text-gray-400 text-lg mb-6">No tienes recursos guardados aún</p>
+        <a href="{{ route('library.index') }}" class="btn-primary inline-block">Explorar Biblioteca</a>
     </div>
     @endif
 
-    <div class="mt-12 bg-white rounded-xl shadow p-6">
-        <h2 class="text-2xl font-bold text-primary mb-4">📈 Estadísticas destacadas</h2>
-        <div class="grid md:grid-cols-2 gap-6">
-            <div class="border rounded-xl p-6 bg-gray-50">
-                <p class="text-sm text-gray-500">Docente que subió más material</p>
+    <!-- Statistics Section -->
+    <div class="glass border border-teal/30 rounded-2xl p-8">
+        <h2 class="text-2xl font-bold text-gold mb-6">📈 Estadísticas Destacadas</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Top Teacher -->
+            <div class="glass-light border border-teal/20 rounded-xl p-6">
+                <p class="text-sm text-gray-400 mb-3">👨‍🏫 Docente Destacado</p>
                 @if($topTeacher && $topTeacher->author)
-                    <p class="mt-3 text-xl font-bold text-gray-800">{{ $topTeacher->author->name }} {{ $topTeacher->author->lastname }}</p>
-                    <p class="text-gray-600">{{ $topTeacher->total }} recursos</p>
+                    <p class="text-2xl font-bold text-gold mb-2">{{ $topTeacher->author->name }}</p>
+                    <p class="text-gray-300">{{ $topTeacher->total }} recursos creados</p>
                 @else
-                    <p class="text-gray-500 mt-3">No hay suficientes datos aún.</p>
+                    <p class="text-gray-400 mt-3">No hay datos disponibles aún</p>
                 @endif
             </div>
-            <div class="border rounded-xl p-6 bg-gray-50">
-                <p class="text-sm text-gray-500">Archivo más buscado</p>
+
+            <!-- Top Resource -->
+            <div class="glass-light border border-teal/20 rounded-xl p-6">
+                <p class="text-sm text-gray-400 mb-3">⭐ Recurso Más Popular</p>
                 @if($topResource)
-                    <p class="mt-3 text-xl font-bold text-gray-800">{{ $topResource->title }}</p>
-                    <p class="text-gray-600">{{ $topResource->views }} vistas · {{ $topResource->downloads }} descargas</p>
+                    <p class="text-lg font-bold text-teal mb-2">{{ $topResource->title }}</p>
+                    <div class="flex gap-4 text-sm">
+                        <span class="text-gray-300">👁️ {{ $topResource->views }} vistas</span>
+                        <span class="text-gold">⬇️ {{ $topResource->downloads }} descargas</span>
+                    </div>
                 @else
-                    <p class="text-gray-500 mt-3">Aún no hay recursos aprobados.</p>
+                    <p class="text-gray-400 mt-3">Aún no hay recursos publicados</p>
                 @endif
             </div>
         </div>

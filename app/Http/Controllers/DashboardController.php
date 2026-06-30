@@ -11,6 +11,11 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         
+        // Admin redirect
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+        
         $topTeacher = Resource::selectRaw('author_id, count(*) as total')
             ->groupBy('author_id')
             ->orderByDesc('total')

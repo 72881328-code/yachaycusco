@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,4 +36,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/recursos/{id}/editar', [ResourceController::class, 'edit'])->name('resources.edit');
     Route::put('/recursos/{id}', [ResourceController::class, 'update'])->name('resources.update');
     Route::delete('/recursos/{id}', [ResourceController::class, 'destroy'])->name('resources.destroy');
+});
+
+// Admin routes
+Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/resources', [AdminController::class, 'resources'])->name('admin.resources');
+    Route::post('/resources/{id}/approve', [AdminController::class, 'approve'])->name('admin.approve');
+    Route::post('/resources/{id}/reject', [AdminController::class, 'reject'])->name('admin.reject');
+    Route::post('/resources/{id}/draft', [AdminController::class, 'draft'])->name('admin.draft');
 });
